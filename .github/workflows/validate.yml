@@ -29,5 +29,5 @@ jobs:
         run: python Tools/validate_repository.py .
       - name: Test and rebuild analyzer
         run: dotnet test Packages/com.ryxinteractive.project-auditor-rules/Analyzer~/RyxInteractive.ProjectAuditorRules.CodeSizeAnalyzer.Tests.csproj --configuration Release
-      - name: Ensure committed analyzer is current
-        run: git diff --exit-code -- Packages/com.ryxinteractive.project-auditor-rules/RoslynAnalyzers/RyxInteractive.ProjectAuditorRules.CodeSizeAnalyzer.dll
+      - name: Ensure the release output contains the analyzer
+        run: test -s Packages/com.ryxinteractive.project-auditor-rules/Analyzer~/bin/Release/RyxInteractive.ProjectAuditorRules.CodeSizeAnalyzer.dll

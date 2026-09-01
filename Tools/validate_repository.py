@@ -93,17 +93,19 @@ def validate_repository(root: Path, expected_tag: str | None = None) -> list[Fin
         findings.append(Finding("UNITY_TESTS_MISSING", Path("Assets/Tests/Editor"), "Repository-only Unity tests must live under Assets/Tests/Editor."))
     if not (root / "Packages" / "manifest.json").is_file():
         findings.append(Finding("HOST_MANIFEST_MISSING", Path("Packages/manifest.json"), "The Unity host manifest is required."))
-    if not ANALYZER_DLL.is_file():
+    analyzer_dll_path = root / ANALYZER_DLL
+    analyzer_meta_path = root / ANALYZER_META
+    if not analyzer_dll_path.is_file():
         findings.append(Finding("ANALYZER_DLL_MISSING", ANALYZER_DLL, "The committed Release analyzer DLL is required."))
-    if not ANALYZER_META.is_file():
+    if not analyzer_meta_path.is_file():
         findings.append(Finding("ANALYZER_META_MISSING", ANALYZER_META, "The analyzer PluginImporter metadata is required."))
     else:
-        meta = ANALYZER_META.read_text(encoding="utf-8")
+        meta = analyzer_meta_path.read_text(encoding="utf-8")
         if "- RoslynAnalyzer" not in meta:
-            findings.append(Finding("ANALYZER_LABEL", ANALYZER_META.relative_to(root), "Analyzer DLL must have the RoslynAnalyzer label."))
+            findings.append(Finding("ANALYZER_LABEL", ANALYZER_META, "Analyzer DLL must have the RoslynAnalyzer label."))
         for platform in ("Any", "Editor", "Win64", "Linux64", "OSXUniversal"):
             if not re.search(rf"^    {re.escape(platform)}:\s*$.*?^      enabled: 0\s*$", meta, re.MULTILINE | re.DOTALL):
-                findings.append(Finding("ANALYZER_PLATFORM", ANALYZER_META.relative_to(root), f"Analyzer must be disabled for {platform}."))
+                findings.append(Finding("ANALYZER_PLATFORM", ANALYZER_META, f"Analyzer must be disabled for {platform}."))
 
     cyrillic_pattern = re.compile(r"[\u0400-\u052f\u1c80-\u1c8f\u2de0-\u2dff\ua640-\ua69f]")
     legacy_brand = "ic" + "vr"
