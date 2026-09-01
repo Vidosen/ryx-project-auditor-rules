@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "codeSize": {
+    "typeMaxSloc": 300,
+    "memberMaxSloc": 30,
+    "includeGlobs": ["Assets/**/*.cs"],
+    "excludeGlobs": ["**/*.g.cs", "**/*.generated.cs"]
+  }
+}

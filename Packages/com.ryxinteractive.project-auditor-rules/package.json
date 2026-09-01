@@ -1,0 +1,25 @@
+{
+  "name": "com.ryxinteractive.project-auditor-rules",
+  "version": "0.1.0",
+  "displayName": "Ryx Project Auditor Rules",
+  "unity": "6000.0",
+  "description": "Ryx Interactive Project Auditor rules for enforcing source-code size boundaries with a safe legacy baseline ratchet.",
+  "type": "tool",
+  "license": "GPL-3.0-only",
+  "documentationUrl": "https://github.com/Vidosen/ryx-project-auditor-rules/blob/main/Packages/com.ryxinteractive.project-auditor-rules/README.md",
+  "changelogUrl": "https://github.com/Vidosen/ryx-project-auditor-rules/blob/main/Packages/com.ryxinteractive.project-auditor-rules/CHANGELOG.md",
+  "licensesUrl": "https://github.com/Vidosen/ryx-project-auditor-rules/blob/main/Packages/com.ryxinteractive.project-auditor-rules/LICENSE.md",
+  "keywords": [
+    "static analysis",
+    "project auditor",
+    "roslyn",
+    "code quality"
+  ],
+  "author": {
+    "name": "Ryx Interactive",
+    "url": "https://github.com/Vidosen"
+  },
+  "dependencies": {
+    "com.unity.project-auditor": "1.1.0"
+  }
+}

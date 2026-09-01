@@ -1,0 +1,42 @@
+# Unity-generated directories
+/[Ll]ibrary/
+/[Tt]emp/
+/[Oo]bj/
+/[Bb]uild/
+/[Bb]uilds/
+/[Ll]ogs/
+/[Uu]ser[Ss]ettings/
+/[Mm]emoryCaptures/
+/[Rr]ecordings/
+/TestResults/
+
+# IDE-generated files
+/.idea/
+/.vs/
+/.vscode/
+*.csproj
+*.sln
+*.slnx
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.mdb
+*.opendb
+*.VC.db
+
+# Analyzer source projects are intentionally kept for contributors.
+!Packages/com.ryxinteractive.project-auditor-rules/Analyzer~/*.csproj
+Packages/com.ryxinteractive.project-auditor-rules/Analyzer~/bin/
+Packages/com.ryxinteractive.project-auditor-rules/Analyzer~/obj/
+
+# Python validation cache
+__pycache__/
+*.py[cod]
+
+# Operating system files
+.DS_Store
+Thumbs.db
+Desktop.ini
