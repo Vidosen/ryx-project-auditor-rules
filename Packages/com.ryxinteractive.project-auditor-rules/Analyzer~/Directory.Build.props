@@ -2,5 +2,8 @@
   <PropertyGroup>
     <BaseIntermediateOutputPath>$(MSBuildThisFileDirectory)obj/$(MSBuildProjectName)/</BaseIntermediateOutputPath>
     <MSBuildProjectExtensionsPath>$(BaseIntermediateOutputPath)</MSBuildProjectExtensionsPath>
+    <Deterministic>true</Deterministic>
+    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+    <PathMap>$(MSBuildThisFileDirectory)=/ryx-project-auditor-rules/Analyzer~/</PathMap>
   </PropertyGroup>
 </Project>
