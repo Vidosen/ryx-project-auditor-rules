@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
@@ -122,19 +123,22 @@ public sealed class CodeSizeDiagnosticAnalyzer : DiagnosticAnalyzer
 
         if (state.Capture != null)
         {
-            // Unity's AssemblyBuilder does not forward compilation-end diagnostics reliably. Emit
-            // the per-assembly heartbeat from the first syntax tree instead, guarded for concurrent
-            // callbacks, so capture can verify that every Player assembly participated.
-            context.RegisterSyntaxTreeAction(treeContext =>
+            // These callbacks omit generated trees, unlike Compilation.SyntaxTrees.
+            context.RegisterSyntaxTreeAction(treeContext => Interlocked.CompareExchange(
+                ref state.ReceiptLocation,
+                treeContext.Tree.GetRoot(treeContext.CancellationToken).GetLocation(), null));
+            // A source location is required by Unity's compiler message parser, including
+            // compilation-end diagnostics. This receipt covers every emitted record.
+            context.RegisterCompilationEndAction(endContext =>
             {
-                if (Interlocked.Exchange(ref state.HeartbeatReported, 1) != 0)
+                var location = state.ReceiptLocation;
+                if (location == null)
                     return;
-
-                var location = treeContext.Tree.GetRoot(treeContext.CancellationToken).GetLocation();
-                treeContext.ReportDiagnostic(Diagnostic.Create(
+                endContext.ReportDiagnostic(Diagnostic.Create(
                     CaptureHeartbeat,
                     location,
-                    CaptureProtocol.EncodeHeartbeat(state.Capture.Nonce, state.AssemblyName)));
+                    CaptureProtocol.EncodeHeartbeat(state.Capture.Nonce, state.AssemblyName,
+                        state.Records.Count, CaptureTransport.Digest(state.Records))));
             });
         }
     }
@@ -215,11 +219,11 @@ public sealed class CodeSizeDiagnosticAnalyzer : DiagnosticAnalyzer
 
         if (state.Capture != null)
         {
-            report(Diagnostic.Create(
-                CaptureRecord,
-                location,
-                CaptureProtocol.EncodeRecord(state.Capture.Nonce,
-                    new MeasuredSymbol(ruleId, state.AssemblyName, symbolId, measured))));
+            var record = CaptureProtocol.EncodeRecord(state.Capture.Nonce,
+                new MeasuredSymbol(ruleId, state.AssemblyName, symbolId, measured));
+            state.Records.Add(record);
+            foreach (var chunk in CaptureTransport.Encode(record))
+                report(Diagnostic.Create(CaptureRecord, location, chunk));
             return;
         }
 
@@ -286,7 +290,8 @@ public sealed class CodeSizeDiagnosticAnalyzer : DiagnosticAnalyzer
         public CodeSizeSettings CodeSize { get; }
         public PathGlobMatcher Scope { get; }
         public CaptureRequest Capture { get; }
-        public int HeartbeatReported;
+        public ConcurrentBag<string> Records { get; } = new ConcurrentBag<string>();
+        public Location ReceiptLocation;
 
         public int GetAllowed(string ruleId, string symbolId, int threshold)
         {

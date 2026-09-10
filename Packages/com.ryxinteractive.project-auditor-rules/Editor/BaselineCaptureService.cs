@@ -136,7 +136,8 @@ internal sealed class BaselineCaptureService
         var messages = report.GetAllIssues().Where(issue => issue.Category == IssueCategory.CodeCompilerMessage).ToArray();
         var heartbeats = new HashSet<string>(StringComparer.Ordinal);
         var expectedAssemblySet = new HashSet<string>(expectedAssemblies, StringComparer.Ordinal);
-        var measurements = new Dictionary<string, MeasuredSymbol>(StringComparer.Ordinal);
+        var chunks = new List<string>();
+        var receipts = new Dictionary<string, (int Count, string Digest)>(StringComparer.Ordinal);
 
         foreach (var message in messages)
         {
@@ -148,21 +149,17 @@ internal sealed class BaselineCaptureService
 
             if (code == DiagnosticIds.CaptureHeartbeat)
             {
-                if (!CaptureProtocol.TryDecodeHeartbeat(message.Description, out var messageNonce, out var assemblyName) ||
+                if (!CaptureProtocol.TryDecodeHeartbeat(message.Description, out var messageNonce, out var assemblyName,
+                        out var count, out var digest) ||
                     messageNonce != nonce ||
                     !expectedAssemblySet.Contains(assemblyName) ||
                     !heartbeats.Add(assemblyName))
                     return CaptureOutcome.Failed("Project Auditor returned a malformed capture heartbeat.");
+                receipts.Add(assemblyName, (count, digest));
             }
             else if (code == DiagnosticIds.CaptureRecord)
             {
-                if (!CaptureProtocol.TryDecodeRecord(message.Description, out var messageNonce, out var measured) ||
-                    messageNonce != nonce ||
-                    !expectedAssemblySet.Contains(measured.AssemblyName))
-                    return CaptureOutcome.Failed("Project Auditor returned a malformed capture record.");
-
-                if (!measurements.TryAdd(measured.Key, measured))
-                    return CaptureOutcome.Failed("Project Auditor returned duplicate capture records.");
+                chunks.Add(message.Description);
             }
         }
 
@@ -170,7 +167,17 @@ internal sealed class BaselineCaptureService
         if (missingAssemblies.Length > 0)
             return CaptureOutcome.Failed("Capture did not complete for assemblies: " + string.Join(", ", missingAssemblies));
 
-        return CaptureOutcome.Succeeded(measurements.Values
+        if (!CaptureTransport.TryDecode(chunks, nonce, out var measurements, out var error))
+            return CaptureOutcome.Failed(error);
+        if (measurements.Any(measured => !expectedAssemblySet.Contains(measured.AssemblyName)))
+            return CaptureOutcome.Failed("Capture returned records from an unexpected assembly.");
+        foreach (var receipt in receipts)
+        {
+            if (!CaptureTransport.MatchesReceipt(measurements, nonce, receipt.Key, receipt.Value.Count, receipt.Value.Digest))
+                return CaptureOutcome.Failed("Capture records are missing or corrupt for assembly: " + receipt.Key);
+        }
+
+        return CaptureOutcome.Succeeded(measurements
             .OrderBy(measured => measured.RuleId, StringComparer.Ordinal)
             .ThenBy(measured => measured.AssemblyName, StringComparer.Ordinal)
             .ThenBy(measured => measured.SymbolId, StringComparer.Ordinal)

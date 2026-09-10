@@ -1,6 +1,6 @@
 {
   "name": "com.ryxinteractive.project-auditor-rules",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "displayName": "Ryx Project Auditor Rules",
   "unity": "6000.0",
   "description": "Ryx Interactive Project Auditor rules for enforcing source-code size boundaries with a safe legacy baseline ratchet.",

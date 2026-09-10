@@ -31,11 +31,16 @@ static class CaptureProtocol
 {
     private const char Separator = '|';
 
-    public static string EncodeHeartbeat(string nonce, string assemblyName) => string.Join(
+    public static string EncodeHeartbeat(string nonce, string assemblyName) =>
+        EncodeHeartbeat(nonce, assemblyName, 0, CaptureTransport.Digest(Array.Empty<string>()));
+
+    public static string EncodeHeartbeat(string nonce, string assemblyName, int count, string digest) => string.Join(
         Separator.ToString(),
         "h",
         Encode(nonce),
-        Encode(assemblyName));
+        Encode(assemblyName),
+        count.ToString(System.Globalization.CultureInfo.InvariantCulture),
+        digest);
 
     public static string EncodeRecord(string nonce, MeasuredSymbol measured) => string.Join(
         Separator.ToString(),
@@ -47,12 +52,20 @@ static class CaptureProtocol
         measured.Sloc.ToString(System.Globalization.CultureInfo.InvariantCulture));
 
     public static bool TryDecodeHeartbeat(string payload, out string nonce, out string assemblyName)
+        => TryDecodeHeartbeat(payload, out nonce, out assemblyName, out _, out _);
+
+    public static bool TryDecodeHeartbeat(string payload, out string nonce, out string assemblyName,
+        out int count, out string digest)
     {
         nonce = string.Empty;
         assemblyName = string.Empty;
+        count = 0;
+        digest = string.Empty;
         var fields = payload?.Split(Separator);
-        if (fields == null || fields.Length != 3 || fields[0] != "h")
+        if (fields == null || fields.Length != 5 || fields[0] != "h" ||
+            !int.TryParse(fields[3], out count) || count < 0 || fields[4].Length != 64)
             return false;
+        digest = fields[4];
 
         return TryDecode(fields[1], out nonce) &&
                TryDecode(fields[2], out assemblyName) &&

@@ -54,7 +54,7 @@ def validate_repository(root: Path, expected_tag: str | None = None) -> list[Fin
         expected_metadata = {
             "name": PACKAGE_ID,
             "displayName": "Ryx Project Auditor Rules",
-            "version": "0.1.0",
+            "version": "0.1.1",
             "unity": "6000.0",
             "type": "tool",
             "license": "GPL-3.0-only",

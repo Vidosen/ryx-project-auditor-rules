@@ -10,7 +10,7 @@ Ryx Project Auditor Rules is an open-source Unity package that reports oversized
 Unity 6000.0 or newer is required. Add the tagged Git URL through Unity Package Manager:
 
 ```text
-https://github.com/Vidosen/ryx-project-auditor-rules.git?path=Packages/com.ryxinteractive.project-auditor-rules#v0.1.0
+https://github.com/Vidosen/ryx-project-auditor-rules.git?path=Packages/com.ryxinteractive.project-auditor-rules#v0.1.1
 ```
 
 Open **Project Settings → Ryx Project Auditor Rules → Code Size**, enable **Use Roslyn Analyzers**, select **Player** mode and the Player assemblies in Project Auditor, then run the audit manually. For a project with existing debt, capture an initial baseline before enforcing the ratchet.
@@ -30,7 +30,7 @@ Run the repository checks:
 dotnet test Packages/com.ryxinteractive.project-auditor-rules/Analyzer~/RyxInteractive.ProjectAuditorRules.CodeSizeAnalyzer.Tests.csproj -c Debug
 dotnet build Packages/com.ryxinteractive.project-auditor-rules/Analyzer~/RyxInteractive.ProjectAuditorRules.CodeSizeAnalyzer.csproj -c Release
 python -m unittest discover -s Tools/tests -v
-python Tools/validate_repository.py . --expected-tag v0.1.0
+python Tools/validate_repository.py . --expected-tag v0.1.1
 unity test . --editor-version 6000.3.21f1 --mode EditMode --filter RyxInteractive.ProjectAuditorRules.Editor.Tests --timeout 600
 ```
 

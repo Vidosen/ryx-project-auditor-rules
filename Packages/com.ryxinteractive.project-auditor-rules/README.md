@@ -7,7 +7,7 @@ This UPM package adds a Roslyn code-size analyzer to Unity Project Auditor.
 Add the tagged Git dependency through Unity Package Manager:
 
 ```text
-https://github.com/Vidosen/ryx-project-auditor-rules.git?path=Packages/com.ryxinteractive.project-auditor-rules#v0.1.0
+https://github.com/Vidosen/ryx-project-auditor-rules.git?path=Packages/com.ryxinteractive.project-auditor-rules#v0.1.1
 ```
 
 ## Setup
@@ -26,9 +26,11 @@ The analyzer is inert when Unity compiles Editor or test code (`UNITY_EDITOR` / 
 
 `Tighten Baseline` can only reduce an existing allowance or remove an entry that is fixed. It never adds a new symbol or increases an allowance, so a regression cannot be silently accepted.
 
+Capture uses short checksummed messages and an end-of-compilation receipt from each assembly. Missing chunks, missing records, compiler errors or cancellation leave the previous baseline unchanged. Capture and subsequent audits must use the same platform and scripting defines: active preprocessor branches affect line counts.
+
 ## Requirements and scope
 
 - Unity 6000.0 or newer.
 - `com.unity.project-auditor` 1.1.0 or newer-compatible.
 - Only Player assemblies are analyzed; Editor and test assemblies are intentionally excluded.
-- Ordinary Unity compilation, builds and CI remain unaffected because the analyzer is disabled for PluginImporter platforms and runs through Project Auditor.
+- No build or CI gate is installed. Unity may attach the analyzer to predefined assemblies despite the isolation asmdef; Editor/test compilations are explicitly skipped, while an ordinary Player build may emit warnings.

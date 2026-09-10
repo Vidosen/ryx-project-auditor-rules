@@ -14,7 +14,7 @@ class RepositoryValidationTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             self._write_valid_repository(root)
-            self.assertEqual([], validate_repository(root, expected_tag="v0.1.0"))
+            self.assertEqual([], validate_repository(root, expected_tag="v0.1.1"))
 
     def test_package_tests_and_missing_headers_are_reported(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -36,7 +36,7 @@ class RepositoryValidationTests(unittest.TestCase):
             manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
             manifest["version"] = "0.2.0"
             manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
-            codes = {finding.code for finding in validate_repository(root, expected_tag="v0.1.0")}
+            codes = {finding.code for finding in validate_repository(root, expected_tag="v0.1.1")}
             self.assertIn("PACKAGE_METADATA", codes)
             self.assertIn("TAG_VERSION", codes)
 
@@ -80,7 +80,7 @@ class RepositoryValidationTests(unittest.TestCase):
                 {
                     "name": PACKAGE_ID,
                     "displayName": "Ryx Project Auditor Rules",
-                    "version": "0.1.0",
+                    "version": "0.1.1",
                     "unity": "6000.0",
                     "type": "tool",
                     "license": "GPL-3.0-only",
