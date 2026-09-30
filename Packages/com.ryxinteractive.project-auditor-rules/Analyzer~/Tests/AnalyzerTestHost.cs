@@ -42,6 +42,17 @@ internal sealed class AnalyzerTestHost : IDisposable
     }
 
     private ImmutableArray<Diagnostic> AnalyzeAtWithSymbols(IEnumerable<string> symbols, params SourceFile[] sources)
+        => AnalyzeAtWithSymbols(symbols, new CodeSizeDiagnosticAnalyzer(), sources);
+
+    public ImmutableArray<Diagnostic> AnalyzeDuplicates(params SourceFile[] sources)
+        => AnalyzeAtWithSymbols(Array.Empty<string>(), new DuplicateImplementationAnalyzer(), sources);
+
+    public ImmutableArray<Diagnostic> AnalyzeDuplicatesWithDefines(string source, params string[] symbols)
+        => AnalyzeAtWithSymbols(symbols, new DuplicateImplementationAnalyzer(),
+            new SourceFile("Assets/Fixture.cs", source));
+
+    private ImmutableArray<Diagnostic> AnalyzeAtWithSymbols(IEnumerable<string> symbols,
+        DiagnosticAnalyzer analyzer, params SourceFile[] sources)
     {
         var trees = sources.Select(source => CSharpSyntaxTree.ParseText(
             source.Source,
@@ -64,7 +75,6 @@ internal sealed class AnalyzerTestHost : IDisposable
         if (compilationErrors.Length > 0)
             throw new InvalidOperationException(string.Join(Environment.NewLine, compilationErrors.Select(diagnostic => diagnostic.ToString())));
 
-        var analyzer = new CodeSizeDiagnosticAnalyzer();
         return compilation
             .WithAnalyzers(ImmutableArray.Create<DiagnosticAnalyzer>(analyzer))
             .GetAnalyzerDiagnosticsAsync()
