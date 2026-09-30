@@ -252,7 +252,7 @@ public sealed class CodeSizeDiagnosticAnalyzer : DiagnosticAnalyzer
         return state.Scope.IsIncluded(relativePath);
     }
 
-    private static bool IsEditorOrTestCompilation(Compilation compilation)
+    internal static bool IsEditorOrTestCompilation(Compilation compilation)
     {
         foreach (var tree in compilation.SyntaxTrees)
         {

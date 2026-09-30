@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <Compile Include="CodeSize\**\*.cs" />
+    <Compile Include="Duplication\**\*.cs" />
     <Compile Include="..\Editor\Shared\**\*.cs" Link="Shared\%(RecursiveDir)%(Filename)%(Extension)" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.3.1" PrivateAssets="all" />
   </ItemGroup>

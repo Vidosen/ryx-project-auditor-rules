@@ -3,7 +3,9 @@
 [![License: GPL-3.0-only](https://img.shields.io/badge/License-GPL--3.0--only-blue.svg)](LICENSE)
 [![Validate](https://github.com/Vidosen/ryx-project-auditor-rules/actions/workflows/validate.yml/badge.svg)](https://github.com/Vidosen/ryx-project-auditor-rules/actions/workflows/validate.yml)
 
-Ryx Project Auditor Rules is an open-source Unity package that reports oversized Player code through Project Auditor's **Code → Compiler Messages** view. It enforces a 300 active-line limit for type declarations and a 30 active-line limit for executable members, with a safe baseline ratchet for existing code.
+Ryx Project Auditor Rules is an open-source Unity package that reports oversized and duplicated Player code through Project Auditor's **Code → Compiler Messages** view. It enforces a 300 active-line limit for type declarations and a 30 active-line limit for executable members, with a safe baseline ratchet for existing code.
+
+The next development version also includes `RYXPA2001`: matching whole private static method implementations within one Player assembly, with semantic normalization and conservative exclusions. See the [package documentation](Packages/com.ryxinteractive.project-auditor-rules/README.md#duplicate-implementations-ryxpa2001). This addition is not included in the existing v0.1.1 tag.
 
 ## Install
 
@@ -39,3 +41,4 @@ The GitHub workflow runs the repository and analyzer checks. Unity Editor integr
 ## License
 
 Copyright 2026 Ryx Interactive. Licensed under [GPL-3.0-only](LICENSE).
+

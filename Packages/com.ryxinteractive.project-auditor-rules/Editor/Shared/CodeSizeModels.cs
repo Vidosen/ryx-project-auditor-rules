@@ -19,6 +19,7 @@ static class DiagnosticIds
     public const string InvalidBaseline = "RYXPA0002";
     public const string TypeTooLong = "RYXPA1001";
     public const string MemberTooLong = "RYXPA1002";
+    public const string DuplicateImplementation = "RYXPA2001";
     public const string CaptureHeartbeat = "RYXPA9000";
     public const string CaptureRecord = "RYXPA9001";
 }
